@@ -12,7 +12,7 @@ from scipy.spatial import distance
 from jinja2 import Template
 
 st.set_page_config(
-page_title="AI 智能醫美面診輔助系統",
+page_title=“AI 智能醫美面診輔助系統”,
 page_icon=“🏥”,
 layout=“wide”,
 initial_sidebar_state=“collapsed”,
