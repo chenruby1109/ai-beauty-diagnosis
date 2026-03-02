@@ -1,8 +1,5 @@
 
-AI 智能醫美面診輔助系統
-版本1.0.0
-執行方式：streamlit run app.py
-依賴：pip install streamlit mediapipe opencv-python numpy scipy Pillow jinja2
+
 
 //
 import streamlit as st
