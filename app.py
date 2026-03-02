@@ -12,10 +12,10 @@ from scipy.spatial import distance
 from jinja2 import Template
 
 st.set_page_config(
-page_title=“AI 智能醫美面診輔助系統”,
-page_icon=“🏥”,
-layout=“wide”,
-initial_sidebar_state=“collapsed”,
+page_title="AI 智能醫美面診輔助系統",
+page_icon="🏥",
+layout="wide",
+initial_sidebar_state="collapsed",
 )
 
 # ─────────────────────────────────────────
@@ -25,55 +25,55 @@ initial_sidebar_state=“collapsed”,
 # ─────────────────────────────────────────
 
 PRODUCT_DB = {
-“肉毒毒素_抬頭紋”: {“category”: “肉毒毒素”, “brands”: [“奇蹟肉毒”, “天使肉毒”, “寶提拉肉毒”], “dose”: {“輕度”: “10-15U”, “中度”: “15-25U”, “重度”: “25-40U”}, “dose_mid”: {“輕度”: 12, “中度”: 20, “重度”: 32}, “layer”: “額肌（肌肉層）”, “method”: “多點注射，間距約 1.5cm”, “effect”: “3-7 天見效，維持 4-6 個月”},
-“肉毒毒素_眉間紋”: {“category”: “肉毒毒素”, “brands”: [“奇蹟肉毒”, “天使肉毒”, “寶提拉肉毒”], “dose”: {“輕度”: “10-15U”, “中度”: “15-25U”, “重度”: “25-40U”}, “dose_mid”: {“輕度”: 12, “中度”: 20, “重度”: 32}, “layer”: “皺眉肌（肌肉層）”, “method”: “5 點標準注射法”, “effect”: “3-7 天改善，維持 4-6 個月”},
-“肉毒毒素_魚尾紋”: {“category”: “肉毒毒素”, “brands”: [“奇蹟肉毒”, “天使肉毒”], “dose”: {“輕度”: “5-10U/側”, “中度”: “10-15U/側”, “重度”: “15-20U/側”}, “dose_mid”: {“輕度”: 7, “中度”: 12, “重度”: 17}, “layer”: “眼輪匝肌”, “method”: “眼外角扇形多點注射”, “effect”: “5-7 天平滑，維持 3-5 個月”},
-“肉毒毒素_下頜緣”: {“category”: “肉毒毒素”, “brands”: [“奇蹟肉毒”, “天使肉毒”], “dose”: {“輕度”: “10-20U”, “中度”: “20-30U”, “重度”: “30-50U”}, “dose_mid”: {“輕度”: 15, “中度”: 25, “重度”: 40}, “layer”: “頸闊肌”, “method”: “沿頸闊肌條索線性注射”, “effect”: “輪廓提升，維持 4-6 個月”},
-“肉毒毒素_國字臉”: {“category”: “肉毒毒素”, “brands”: [“奇蹟肉毒”, “天使肉毒”], “dose”: {“輕度”: “20-30U/側”, “中度”: “30-40U/側”, “重度”: “40-60U/側”}, “dose_mid”: {“輕度”: 25, “中度”: 35, “重度”: 50}, “layer”: “咬肌（深層）”, “method”: “咬肌中下 1/3 定點注射”, “effect”: “2-4 週縮小，維持 6-12 個月”},
-“肉毒毒素_小腿”: {“category”: “肉毒毒素”, “brands”: [“奇蹟肉毒”, “天使肉毒”, “寶提拉肉毒”], “dose”: {“輕度”: “50-80U/側”, “中度”: “80-100U/側”, “重度”: “100-150U/側”}, “dose_mid”: {“輕度”: 65, “中度”: 90, “重度”: 125}, “layer”: “腓腸肌內側頭（深層肌肉）”, “method”: “多點格狀注射，每點 5-10U”, “effect”: “4-8 週小腿線條改善，維持 6-9 個月”},
-“VOLUMA_蘋果肌”: {“category”: “玻尿酸”, “brands”: [“喬雅登 VOLUMA”], “dose”: {“輕度”: “0.5-1ml/側”, “中度”: “1-1.5ml/側”, “重度”: “1.5-2ml/側”}, “dose_mid”: {“輕度”: “0.75ml”, “中度”: “1.25ml”, “重度”: “1.75ml”}, “layer”: “骨膜上層或深層皮下脂肪”, “method”: “扇形注射 / 線性推注”, “effect”: “蘋果肌圓潤，維持 18-24 個月”},
-“VOLUMA_下巴”: {“category”: “玻尿酸”, “brands”: [“喬雅登 VOLUMA”], “dose”: {“輕度”: “0.5-1ml”, “中度”: “1-1.5ml”, “重度”: “1.5-2ml”}, “dose_mid”: {“輕度”: “0.75ml”, “中度”: “1.25ml”, “重度”: “1.75ml”}, “layer”: “骨膜上層”, “method”: “單點或扇形注射”, “effect”: “下巴延長翹挺，維持 12-18 個月”},
-“VOLUMA_法令紋”: {“category”: “玻尿酸”, “brands”: [“喬雅登 VOLUMA”], “dose”: {“輕度”: “0.5-1ml/側”, “中度”: “1-1.5ml/側”, “重度”: “1.5-2ml/側”}, “dose_mid”: {“輕度”: “0.75ml”, “中度”: “1.25ml”, “重度”: “1.75ml”}, “layer”: “深層皮下 / 骨膜上層”, “method”: “逆行線性 + 扇形”, “effect”: “法令紋減少 60-80%，維持 12-18 個月”},
-“VOLUX_下頜輪廓”: {“category”: “玻尿酸”, “brands”: [“喬雅登 VOLUX”], “dose”: {“輕度”: “1-2ml”, “中度”: “2-3ml”, “重度”: “3-4ml”}, “dose_mid”: {“輕度”: “1.5ml”, “中度”: “2.5ml”, “重度”: “3.5ml”}, “layer”: “骨膜上層”, “method”: “線性注射，沿下頜骨緣推注”, “effect”: “下頜輪廓清晰，維持 18-24 個月”},
-“VOLIFT_法令紋”: {“category”: “玻尿酸”, “brands”: [“喬雅登 VOLIFT（豐麗緹）”], “dose”: {“輕度”: “0.8-1ml/側”, “中度”: “1-1.5ml/側”, “重度”: “1.5-2ml/側”}, “dose_mid”: {“輕度”: “0.9ml”, “中度”: “1.25ml”, “重度”: “1.75ml”}, “layer”: “真皮深層至皮下層”, “method”: “逆行線性注射 + 蕨葉技術”, “effect”: “法令紋平滑，維持 12-15 個月”},
-“VOLBELLA_淚溝”: {“category”: “玻尿酸”, “brands”: [“喬雅登 VOLBELLA（夢蓓菈）”], “dose”: {“輕度”: “0.3-0.5ml/側”, “中度”: “0.5-1ml/側”, “重度”: “1-1.5ml/側”}, “dose_mid”: {“輕度”: “0.4ml”, “中度”: “0.75ml”, “重度”: “1.25ml”}, “layer”: “眶隔前脂肪層 / 骨膜上層”, “method”: “微量多點 / 線性注射”, “effect”: “淚溝填補，維持 9-12 個月”},
-“VOLITE_全臉保濕”: {“category”: “玻尿酸”, “brands”: [“喬雅登 VOLITE（芙潤）”], “dose”: {“輕度”: “1-2ml”, “中度”: “2-3ml”, “重度”: “3-4ml”}, “dose_mid”: {“輕度”: “1.5ml”, “中度”: “2.5ml”, “重度”: “3.5ml”}, “layer”: “真皮中層”, “method”: “多點均勻注射 / 水光槍輔助”, “effect”: “膚質細緻，維持 6-9 個月”},
-“舒顏萃Sculptra”: {“category”: “膠原蛋白增生劑”, “brands”: [“舒顏萃 Sculptra”], “dose”: {“輕度”: “1瓶”, “中度”: “2瓶”, “重度”: “3-4瓶”}, “dose_mid”: {“輕度”: “1瓶”, “中度”: “2瓶”, “重度”: “3瓶”}, “layer”: “真皮深層至皮下層”, “method”: “扇形大範圍注射，按摩分散”, “effect”: “刺激膠原新生，2-3 月顯現，維持 18-24 個月”},
-“鳳凰埋線”: {“category”: “埋線提拉”, “brands”: [“鳳凰埋線（大V線）”], “dose”: {“輕度”: “4-6根/側”, “中度”: “6-10根/側”, “重度”: “10-16根/側”}, “dose_mid”: {“輕度”: “5根/側”, “中度”: “8根/側”, “重度”: “13根/側”}, “layer”: “SMAS 筋膜層 / 深層皮下”, “method”: “逆行進針，錨定點固定，雙向倒鉤提拉”, “effect”: “即時提拉，維持 12-18 個月”},
-“麗珠蘭PN1%”: {“category”: “PN 核酸修復”, “brands”: [“麗珠蘭 PN 1%”], “dose”: {“輕度”: “1ml”, “中度”: “1.5-2ml”, “重度”: “2-3ml”}, “dose_mid”: {“輕度”: “1ml”, “中度”: “1.75ml”, “重度”: “2.5ml”}, “layer”: “真皮淺中層”, “method”: “水光槍 / 多點注射”, “effect”: “膚色提亮，建議 3-4 療程”},
-“皮秒雷射”: {“category”: “能量療程”, “brands”: [“皮秒雷射”], “dose”: {“輕度”: “1次”, “中度”: “3-5次”, “重度”: “5-8次”}, “dose_mid”: {“輕度”: “1次”, “中度”: “4次”, “重度”: “6次”}, “layer”: “表皮至真皮層”, “method”: “全臉掃描，依斑點加強”, “effect”: “膚色均勻，每 4-6 週一次”},
-“音波拉提”: {“category”: “能量療程”, “brands”: [“音波拉提 (Ultherapy)”], “dose”: {“輕度”: “200-400發”, “中度”: “400-600發”, “重度”: “600-1000發”}, “dose_mid”: {“輕度”: “300發”, “中度”: “500發”, “重度”: “800發”}, “layer”: “SMAS 筋膜層 + 真皮層”, “method”: “線性掃描，分層施打”, “effect”: “3-6 月顯效，維持 12-18 個月”},
-“電波拉提”: {“category”: “能量療程”, “brands”: [“電波拉提 (Thermage)”], “dose”: {“輕度”: “900發”, “中度”: “1200發”, “重度”: “1500發”}, “dose_mid”: {“輕度”: “900發”, “中度”: “1200發”, “重度”: “1500發”}, “layer”: “真皮深層至皮下層”, “method”: “全臉均勻掃描”, “effect”: “即時緊緻，維持 12-24 個月”},
+"肉毒毒素_抬頭紋": {"category": "肉毒毒素", "brands": ["奇蹟肉毒", "天使肉毒", "寶提拉肉毒"], "dose": {"輕度": "10-15U", "中度": "15-25U", "重度": "25-40U"}, "dose_mid": {"輕度": 12, "中度": 20, "重度": 32}, "layer": "額肌（肌肉層）", "method": "多點注射，間距約 1.5cm", "effect": "3-7 天見效，維持 4-6 個月"},
+"肉毒毒素_眉間紋": {"category": "肉毒毒素", "brands": ["奇蹟肉毒", "天使肉毒", "寶提拉肉毒"], "dose": {"輕度": "10-15U", "中度": "15-25U", "重度": "25-40U"}, "dose_mid": {"輕度": 12, "中度": 20, "重度": 32}, "layer": "皺眉肌（肌肉層）", "method": "5 點標準注射法", "effect": "3-7 天改善，維持 4-6 個月"},
+"肉毒毒素_魚尾紋": {"category": "肉毒毒素", "brands": ["奇蹟肉毒", "天使肉毒"], "dose": {"輕度": "5-10U/側", "中度": "10-15U/側", "重度": "15-20U/側"}, "dose_mid": {"輕度": 7, "中度": 12, "重度": 17}, "layer": "眼輪匝肌", "method": "眼外角扇形多點注射", "effect": "5-7 天平滑，維持 3-5 個月"},
+"肉毒毒素_下頜緣": {"category": "肉毒毒素", "brands": ["奇蹟肉毒", "天使肉毒"], "dose": {"輕度": "10-20U", "中度": "20-30U", "重度": "30-50U"}, "dose_mid": {"輕度": 15, "中度": 25, "重度": 40}, "layer": "頸闊肌", "method": "沿頸闊肌條索線性注射", "effect": "輪廓提升，維持 4-6 個月"},
+"肉毒毒素_國字臉": {"category": "肉毒毒素", "brands": ["奇蹟肉毒", "天使肉毒"], "dose": {"輕度": "20-30U/側", "中度": "30-40U/側", "重度": "40-60U/側"}, "dose_mid": {"輕度": 25, "中度": 35, "重度": 50}, "layer": "咬肌（深層）", "method": "咬肌中下 1/3 定點注射", "effect": "2-4 週縮小，維持 6-12 個月"},
+"肉毒毒素_小腿": {"category": "肉毒毒素", "brands": ["奇蹟肉毒", "天使肉毒", "寶提拉肉毒"], "dose": {"輕度": "50-80U/側", "中度": "80-100U/側", "重度": "100-150U/側"}, "dose_mid": {"輕度": 65, "中度": 90, "重度": 125}, "layer": "腓腸肌內側頭（深層肌肉）", "method": "多點格狀注射，每點 5-10U", "effect": "4-8 週小腿線條改善，維持 6-9 個月"},
+"VOLUMA_蘋果肌": {"category": "玻尿酸", "brands": ["喬雅登 VOLUMA"], "dose": {"輕度": "0.5-1ml/側", "中度": "1-1.5ml/側", "重度": "1.5-2ml/側"}, "dose_mid": {"輕度": "0.75ml", "中度": "1.25ml", "重度": "1.75ml"}, "layer": "骨膜上層或深層皮下脂肪", "method": "扇形注射 / 線性推注", "effect": "蘋果肌圓潤，維持 18-24 個月"},
+"VOLUMA_下巴": {"category": "玻尿酸", "brands": ["喬雅登 VOLUMA"], "dose": {"輕度": "0.5-1ml", "中度": "1-1.5ml", "重度": "1.5-2ml"}, "dose_mid": {"輕度": "0.75ml", "中度": "1.25ml", "重度": "1.75ml"}, "layer": "骨膜上層", "method": "單點或扇形注射", "effect": "下巴延長翹挺，維持 12-18 個月"},
+"VOLUMA_法令紋": {"category": "玻尿酸", "brands": ["喬雅登 VOLUMA"], "dose": {"輕度": "0.5-1ml/側", "中度": "1-1.5ml/側", "重度": "1.5-2ml/側"}, "dose_mid": {"輕度": "0.75ml", "中度": "1.25ml", "重度": "1.75ml"}, "layer": "深層皮下 / 骨膜上層", "method": "逆行線性 + 扇形", "effect": "法令紋減少 60-80%，維持 12-18 個月"},
+"VOLUX_下頜輪廓": {"category": "玻尿酸", "brands": ["喬雅登 VOLUX"], "dose": {"輕度": "1-2ml", "中度": "2-3ml", "重度": "3-4ml"}, "dose_mid": {"輕度": "1.5ml", "中度": "2.5ml", "重度": "3.5ml"}, "layer": "骨膜上層", "method": "線性注射，沿下頜骨緣推注", "effect": "下頜輪廓清晰，維持 18-24 個月"},
+"VOLIFT_法令紋": {"category": "玻尿酸", "brands": ["喬雅登 VOLIFT（豐麗緹）"], "dose": {"輕度": "0.8-1ml/側", "中度": "1-1.5ml/側", "重度": "1.5-2ml/側"}, "dose_mid": {"輕度": "0.9ml", "中度": "1.25ml", "重度": "1.75ml"}, "layer": "真皮深層至皮下層", "method": "逆行線性注射 + 蕨葉技術", "effect": "法令紋平滑，維持 12-15 個月"},
+"VOLBELLA_淚溝": {"category": "玻尿酸", "brands": ["喬雅登 VOLBELLA（夢蓓菈）"], "dose": {"輕度": "0.3-0.5ml/側", "中度": "0.5-1ml/側", "重度": "1-1.5ml/側"}, "dose_mid": {"輕度": "0.4ml", "中度": "0.75ml", "重度": "1.25ml"}, "layer": "眶隔前脂肪層 / 骨膜上層", "method": "微量多點 / 線性注射", "effect": "淚溝填補，維持 9-12 個月"},
+"VOLITE_全臉保濕": {"category": "玻尿酸", "brands": ["喬雅登 VOLITE（芙潤）"], "dose": {"輕度": "1-2ml", "中度": "2-3ml", "重度": "3-4ml"}, "dose_mid": {"輕度": "1.5ml", "中度": "2.5ml", "重度": "3.5ml"}, "layer": "真皮中層", "method": "多點均勻注射 / 水光槍輔助", "effect": "膚質細緻，維持 6-9 個月"},
+"舒顏萃Sculptra": {"category": "膠原蛋白增生劑", "brands": ["舒顏萃 Sculptra"], "dose": {"輕度": "1瓶", "中度": "2瓶", "重度": "3-4瓶"}, "dose_mid": {"輕度": "1瓶", "中度": "2瓶", "重度": "3瓶"}, "layer": "真皮深層至皮下層", "method": "扇形大範圍注射，按摩分散", "effect": "刺激膠原新生，2-3 月顯現，維持 18-24 個月"},
+"鳳凰埋線": {"category": "埋線提拉", "brands": ["鳳凰埋線（大V線）"], "dose": {"輕度": "4-6根/側", "中度": "6-10根/側", "重度": "10-16根/側"}, "dose_mid": {"輕度": "5根/側", "中度": "8根/側", "重度": "13根/側"}, "layer": "SMAS 筋膜層 / 深層皮下", "method": "逆行進針，錨定點固定，雙向倒鉤提拉", "effect": "即時提拉，維持 12-18 個月"},
+"麗珠蘭PN1%": {"category": "PN 核酸修復", "brands": ["麗珠蘭 PN 1%"], "dose": {"輕度": "1ml", "中度": "1.5-2ml", "重度": "2-3ml"}, "dose_mid": {"輕度": "1ml", "中度": "1.75ml", "重度": "2.5ml"}, "layer": "真皮淺中層", "method": "水光槍 / 多點注射", "effect": "膚色提亮，建議 3-4 療程"},
+"皮秒雷射": {"category": "能量療程", "brands": ["皮秒雷射"], "dose": {"輕度": "1次", "中度": "3-5次", "重度": "5-8次"}, "dose_mid": {"輕度": "1次", "中度": "4次", "重度": "6次"}, "layer": "表皮至真皮層", "method": "全臉掃描，依斑點加強", "effect": "膚色均勻，每 4-6 週一次"},
+"音波拉提": {"category": "能量療程", "brands": ["音波拉提 (Ultherapy)"], "dose": {"輕度": "200-400發", "中度": "400-600發", "重度": "600-1000發"}, "dose_mid": {"輕度": "300發", "中度": "500發", "重度": "800發"}, "layer": "SMAS 筋膜層 + 真皮層", "method": "線性掃描，分層施打", "effect": "3-6 月顯效，維持 12-18 個月"},
+"電波拉提": {"category": "能量療程", "brands": ["電波拉提 (Thermage)"], "dose": {"輕度": "900發", "中度": "1200發", "重度": "1500發"}, "dose_mid": {"輕度": "900發", "中度": "1200發", "重度": "1500發"}, "layer": "真皮深層至皮下層", "method": "全臉均勻掃描", "effect": "即時緊緻，維持 12-24 個月"},
 }
 
 PROBLEM_TO_PRODUCTS = {
-“抬頭紋”:  [(“肉毒毒素_抬頭紋”, “首選”), (“皮秒雷射”, “備選”), (“麗珠蘭PN1%”, “備選”)],
-“眉間紋”:  [(“肉毒毒素_眉間紋”, “首選”), (“皮秒雷射”, “備選”)],
-“魚尾紋”:  [(“肉毒毒素_魚尾紋”, “首選”), (“電波拉提”, “備選”), (“VOLBELLA_淚溝”, “備選”)],
-“淚溝”:    [(“VOLBELLA_淚溝”, “首選”), (“麗珠蘭PN1%”, “備選”)],
-“法令紋”:  [(“VOLUMA_法令紋”, “首選”), (“VOLIFT_法令紋”, “首選”), (“舒顏萃Sculptra”, “備選”), (“鳳凰埋線”, “備選”)],
-“蘋果肌”:  [(“VOLUMA_蘋果肌”, “首選”), (“舒顏萃Sculptra”, “備選”), (“鳳凰埋線”, “備選”)],
-“下頜緣”:  [(“VOLUX_下頜輪廓”, “首選”), (“肉毒毒素_下頜緣”, “首選”), (“音波拉提”, “備選”)],
-“下巴”:    [(“VOLUMA_下巴”, “首選”)],
-“皮膚質地”: [(“VOLITE_全臉保濕”, “首選”), (“皮秒雷射”, “備選”), (“麗珠蘭PN1%”, “備選”)],
-“對稱性”:  [(“肉毒毒素_眉間紋”, “首選”), (“VOLUMA_蘋果肌”, “備選”)],
+"抬頭紋":  [("肉毒毒素_抬頭紋", "首選"), ("皮秒雷射", "備選"), ("麗珠蘭PN1%", "備選")],
+"眉間紋":  [("肉毒毒素_眉間紋", "首選"), ("皮秒雷射", "備選")],
+"魚尾紋":  [("肉毒毒素_魚尾紋", "首選"), ("電波拉提", "備選"), ("VOLBELLA_淚溝", "備選")],
+"淚溝":    [("VOLBELLA_淚溝", "首選"), ("麗珠蘭PN1%", "備選")],
+"法令紋":  [("VOLUMA_法令紋", "首選"), ("VOLIFT_法令紋", "首選"), ("舒顏萃Sculptra", "備選"), ("鳳凰埋線", "備選")],
+"蘋果肌":  [("VOLUMA_蘋果肌", "首選"), ("舒顏萃Sculptra", "備選"), ("鳳凰埋線", "備選")],
+"下頜緣":  [("VOLUX_下頜輪廓", "首選"), ("肉毒毒素_下頜緣", "首選"), ("音波拉提", "備選")],
+"下巴":    [("VOLUMA_下巴", "首選")],
+"皮膚質地": [("VOLITE_全臉保濕", "首選"), ("皮秒雷射", "備選"), ("麗珠蘭PN1%", "備選")],
+"對稱性":  [("肉毒毒素_眉間紋", "首選"), ("VOLUMA_蘋果肌", "備選")],
 }
 
 PHYSIO_BEAUTY_TIPS = {
-“上庭”: {
-“好”: “上庭寬闊，早年運佳，智慧過人，父母緣深厚”,
-“改善”: “若額頭有皺紋或過窄，可透過肉毒放鬆額肌改善抬頭紋，或以玻尿酸填充額頭弧度，讓上庭更飽滿圓潤，提升整體氣場。”,
-“products”: [“肉毒毒素_抬頭紋”, “VOLITE_全臉保濕”]
+"上庭": {
+"好": "上庭寬闊，早年運佳，智慧過人，父母緣深厚",
+"改善": "若額頭有皺紋或過窄，可透過肉毒放鬆額肌改善抬頭紋，或以玻尿酸填充額頭弧度，讓上庭更飽滿圓潤，提升整體氣場。",
+"products": ["肉毒毒素_抬頭紋", "VOLITE_全臉保濕"]
 },
-“中庭”: {
-“好”: “中庭均衡，中年事業運旺，適合創業或擔任管理職”,
-“改善”: “若鼻樑較低或法令紋明顯，可透過玻尿酸墊高鼻樑、填充法令紋，讓中庭比例更完美，面相上增強事業運與威嚴感。”,
-“products”: [“VOLUMA_法令紋”, “VOLIFT_法令紋”]
+"中庭": {
+"好": "中庭均衡，中年事業運旺，適合創業或擔任管理職",
+"改善": "若鼻樑較低或法令紋明顯，可透過玻尿酸墊高鼻樑、填充法令紋，讓中庭比例更完美，面相上增強事業運與威嚴感。",
+"products": ["VOLUMA_法令紋", "VOLIFT_法令紋"]
 },
-“下庭”: {
-“好”: “下庭豐厚，晚年運佳，福氣深厚，子孫有緣”,
-“改善”: “若下巴短或下頜緣不清晰，可透過玻尿酸墊下巴或埋線提拉，讓下庭比例更協調，面相上加強晚年財運與福氣。”,
-“products”: [“VOLUMA_下巴”, “VOLUX_下頜輪廓”]
+"下庭": {
+"好": "下庭豐厚，晚年運佳，福氣深厚，子孫有緣",
+"改善": "若下巴短或下頜緣不清晰，可透過玻尿酸墊下巴或埋線提拉，讓下庭比例更協調，面相上加強晚年財運與福氣。",
+"products": ["VOLUMA_下巴", "VOLUX_下頜輪廓"]
 }
 }
 
@@ -96,10 +96,10 @@ return cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
 def cv2_to_pil(cv2_img):
 return Image.fromarray(cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB))
 
-def image_to_base64(img, fmt=“JPEG”):
+def image_to_base64(img, fmt="JPEG"):
 buf = io.BytesIO()
 img.save(buf, format=fmt)
-return base64.b64encode(buf.getvalue()).decode(“utf-8”)
+return base64.b64encode(buf.getvalue()).decode("utf-8")
 
 def resize_image(img, max_size=800):
 w, h = img.size
@@ -134,11 +134,11 @@ return yaw
 
 def classify_severity(value):
 if value < 0.3:
-return “輕度”
+return "輕度"
 elif value < 0.7:
-return “中度”
+return "中度"
 else:
-return “重度”
+return "重度"
 
 def safe_depth_std(landmarks, indices):
 pts = landmarks[indices, 2]
@@ -279,7 +279,7 @@ return results
 # ─────────────────────────────────────────
 
 def analyze_calf(img_bgr):
-result = {“detected”: False, “calf_ratio”: 0, “severity”: “輕度”, “score”: 0, “description”: “”}
+result = {"detected": False, "calf_ratio": 0, "severity": "輕度", "score": 0, "description": ""}
 try:
 with mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.5) as pose:
 img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
@@ -325,19 +325,19 @@ return result
 
 def draw_calf_annotations(img_bgr, calf_result):
 img = img_bgr.copy()
-if not calf_result.get(“detected”):
+if not calf_result.get("detected"):
 return img
 COLOR = (0, 220, 255)
-for key in [“left_knee”, “left_ankle”, “right_knee”, “right_ankle”]:
+for key in ["left_knee", "left_ankle", "right_knee", "right_ankle"]:
 if key in calf_result:
 cv2.circle(img, calf_result[key], 8, COLOR, -1)
-if “left_knee” in calf_result and “left_ankle” in calf_result:
-cv2.line(img, calf_result[“left_knee”], calf_result[“left_ankle”], COLOR, 2)
-if “right_knee” in calf_result and “right_ankle” in calf_result:
-cv2.line(img, calf_result[“right_knee”], calf_result[“right_ankle”], COLOR, 2)
-sev = calf_result.get(“severity”, “”)
-score = calf_result.get(“score”, 0)
-cv2.putText(img, f”Calf: {sev} ({score:.2f})”, (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+if "left_knee" in calf_result and "left_ankle" in calf_result:
+cv2.line(img, calf_result["left_knee"], calf_result["left_ankle"], COLOR, 2)
+if "right_knee" in calf_result and "right_ankle" in calf_result:
+cv2.line(img, calf_result["right_knee"], calf_result["right_ankle"], COLOR, 2)
+sev = calf_result.get("severity", "")
+score = calf_result.get("score", 0)
+cv2.putText(img, f"Calf: {sev} ({score:.2f})", (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
 return img
 
 # ─────────────────────────────────────────
@@ -347,7 +347,7 @@ return img
 # ─────────────────────────────────────────
 
 def analyze_back(img_front_bgr, img_side_bgr):
-result = {“detected”: False, “back_width_ratio”: 0, “back_thickness_ratio”: 0, “severity”: “輕度”, “description”: “”}
+result = {"detected": False, "back_width_ratio": 0, "back_thickness_ratio": 0, "severity": "輕度", "description": ""}
 try:
 with mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.5) as pose:
 img_rgb = cv2.cvtColor(img_front_bgr, cv2.COLOR_BGR2RGB)
@@ -404,12 +404,12 @@ return result
 def generate_recommendations(analysis):
 rec_list = []
 for problem, data in analysis.items():
-if problem in (“三庭比例”, “五眼比例”):
+if problem in ("三庭比例", "五眼比例"):
 continue
-if not isinstance(data, dict) or “score” not in data:
+if not isinstance(data, dict) or "score" not in data:
 continue
-score = data.get(“score”, 0)
-severity = data.get(“severity”, “輕度”)
+score = data.get("score", 0)
+severity = data.get("severity", "輕度")
 if score < SCORE_THRESHOLD:
 continue
 if problem not in PROBLEM_TO_PRODUCTS:
@@ -456,8 +456,8 @@ return rec_list
 
 def physiognomy_reading(analysis):
 readings = []
-three_zones = analysis.get(“三庭比例”, {})
-five_eyes = analysis.get(“五眼比例”, {})
+three_zones = analysis.get("三庭比例", {})
+five_eyes = analysis.get("五眼比例", {})
 
 ```
 dominant = three_zones.get("dominant", "")
@@ -552,7 +552,7 @@ return img
 # ─────────────────────────────────────────
 
 def apply_styles():
-st.markdown(”””
+st.markdown("""
 <style>
 .stApp { background: #0d1117; }
 h1, h2, h3, h4 { color: #ffd700 !important; }
@@ -571,17 +571,17 @@ label, .stSelectbox label, .stRadio label { color: #e8e8e8 !important; }
 .alt-tag { background: #1a1a3a; color: #8888ff; border: 1px solid #8888ff; padding: 2px 8px; border-radius: 12px; font-size: 0.78rem; }
 .stButton > button { background: linear-gradient(135deg, #e0c44a, #c0a030) !important; color: #000 !important; font-weight: 700 !important; border-radius: 8px !important; border: none !important; padding: 12px 30px !important; font-size: 1rem !important; }
 .stButton > button:hover { opacity: 0.85 !important; }
-div[data-testid=“stInfo”] { background: #0d2137 !important; color: #c0d8f0 !important; }
-div[data-testid=“stInfo”] p { color: #c0d8f0 !important; }
-div[data-testid=“stSuccess”] p { color: #c0f0c0 !important; }
-div[data-testid=“stWarning”] p { color: #f0d080 !important; }
-div[data-testid=“metric-container”] label { color: #a0b4c8 !important; }
-div[data-testid=“metric-container”] [data-testid=“metric-value”] { color: #ffd700 !important; font-size: 1.4rem !important; }
-div[data-testid=“metric-container”] [data-testid=“metric-delta”] { color: #90c090 !important; }
+div[data-testid="stInfo"] { background: #0d2137 !important; color: #c0d8f0 !important; }
+div[data-testid="stInfo"] p { color: #c0d8f0 !important; }
+div[data-testid="stSuccess"] p { color: #c0f0c0 !important; }
+div[data-testid="stWarning"] p { color: #f0d080 !important; }
+div[data-testid="metric-container"] label { color: #a0b4c8 !important; }
+div[data-testid="metric-container"] [data-testid="metric-value"] { color: #ffd700 !important; font-size: 1.4rem !important; }
+div[data-testid="metric-container"] [data-testid="metric-delta"] { color: #90c090 !important; }
 .stExpander details summary p { color: #ffd700 !important; font-weight: 600; }
 .stProgress > div > div { background: linear-gradient(90deg, #2ecc71, #e0c44a, #e74c3c) !important; }
 </style>
-“””, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 
@@ -1041,5 +1041,5 @@ elif mode == "🔙 背部分析":
     st.warning("⚠️ 本系統為輔助參考工具，分析結果不構成醫療建議，實際治療請諮詢合法執照醫師。")
 ```
 
-if **name** == “**main**”:
+if **name** == "**main**":
 main()
