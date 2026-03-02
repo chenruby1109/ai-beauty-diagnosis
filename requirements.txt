@@ -1,7 +1,7 @@
 streamlit
 opencv-python-headless
 numpy
-mediapipe
+mediapipe==0.10.14
 scipy
 Pillow
 jinja2
