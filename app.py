@@ -90,7 +90,7 @@ PRODUCT_DB = {
 “effect”: “2-4 週咬肌縮小，臉型由方轉橢圓，效果維持 6-12 個月”,
 },
 
-```
+
 # ── 喬雅登系列 ────────────────────────────────────────────────────────────
 "VOLUMA_蘋果肌": {
     "category": "玻尿酸",
@@ -360,7 +360,7 @@ PRODUCT_DB = {
     "method": "全臉均勻掃描，多遍疊加",
     "effect": "即時緊緻感，3 個月顯著改善，效果維持 12-24 個月",
 },
-```
+
 
 }
 
@@ -416,7 +416,7 @@ min_detection_confidence=0.5,
 img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
 results = face_mesh.process(img_rgb)
 
-```
+
 if not results.multi_face_landmarks:
     return None, None
 
@@ -425,7 +425,7 @@ lm = results.multi_face_landmarks[0].landmark
 # 轉換為像素座標
 landmarks = np.array([[l.x * w, l.y * h, l.z * w] for l in lm])
 return landmarks, results
-```
+
 
 def estimate_yaw(landmarks: np.ndarray) -> float:
 “””
@@ -436,7 +436,7 @@ nose = landmarks[1]
 left_eye = landmarks[33]
 right_eye = landmarks[263]
 
-```
+
 # 左右眼相對於鼻尖的 x 距離
 left_dist = abs(nose[0] - left_eye[0])
 right_dist = abs(nose[0] - right_eye[0])
@@ -450,7 +450,7 @@ ratio = left_dist / total
 # 映射到 yaw：正面=0°，完全左側=~-90°
 yaw = (ratio - 0.5) * 180.0
 return yaw
-```
+
 
 def classify_severity(value: float) -> str:
 “”“將 0~1 的分數分級”””
@@ -486,7 +486,7 @@ def analyze_face(landmarks: np.ndarray, img_bgr: np.ndarray) -> dict:
 h, w = img_bgr.shape[:2]
 results = {}
 
-```
+
 # ── 三庭比例 ──────────────────────────────────────────────────────────────
 # 上庭：髮際線[10] ~ 眉間[8]
 # 中庭：眉間[8] ~ 鼻下[94]
@@ -691,7 +691,7 @@ results["皮膚質地"] = {
 }
 
 return results
-```
+
 
 # ─────────────────────────────────────────
 
@@ -724,7 +724,7 @@ def generate_recommendations(analysis: dict) -> list:
 rec_list = []
 processed_problems = []
 
-```
+
 for problem, data in analysis.items():
     if problem in ("三庭比例", "五眼比例"):
         continue  # 這兩個是比例分析，不直接對應治療
@@ -765,7 +765,7 @@ for problem, data in analysis.items():
         })
 
 return rec_list
-```
+
 
 # ─────────────────────────────────────────
 
@@ -779,7 +779,7 @@ readings = []
 three_zones = analysis.get(“三庭比例”, {})
 five_eyes = analysis.get(“五眼比例”, {})
 
-```
+
 dominant = three_zones.get("dominant", "")
 upper_r = three_zones.get("upper_ratio", 0.333)
 middle_r = three_zones.get("middle_ratio", 0.333)
@@ -872,7 +872,7 @@ if not readings:
     })
 
 return readings
-```
+
 
 # ─────────────────────────────────────────
 
@@ -885,7 +885,7 @@ def draw_annotations(img_bgr: np.ndarray, landmarks: np.ndarray, analysis: dict)
 img = img_bgr.copy()
 h, w = img.shape[:2]
 
-```
+
 def pt(idx):
     return (int(landmarks[idx, 0]), int(landmarks[idx, 1]))
 
@@ -929,7 +929,7 @@ for y1, y2, text in labels:
     cv2.putText(img, text, (w - 130, mid_y), cv2.FONT_HERSHEY_SIMPLEX, 0.45, COLOR_LINE, 1, cv2.LINE_AA)
 
 return img
-```
+
 
 # ─────────────────────────────────────────
 
@@ -1072,7 +1072,7 @@ padding: 16px; font-size: 0.82rem; color: #c08080; text-align: center; margin-to
     <div class="section-title">📐 三庭比例分析</div>
     <p style="font-size:0.85rem;color:#7090a0;margin-bottom:14px;">理想比例：上庭 ≈ 中庭 ≈ 下庭 ≈ 33.3%</p>
 
-```
+
 {% set zones = analysis["三庭比例"] %}
 {% for zone_name, ratio_key, fill_class in [
     ("上庭", "upper_ratio", zones.upper_ratio),
@@ -1093,7 +1093,7 @@ padding: 16px; font-size: 0.82rem; color: #c08080; text-align: center; margin-to
 <div style="margin-top:14px;font-size:0.88rem;color:#a0c0d8;">
   主導分區：<strong style="color:#e0c44a;">{{ zones.dominant }}</strong>
 </div>
-```
+
 
   </div>
 
@@ -1225,7 +1225,7 @@ analysis, recommendations, physiognomy
 “”“使用 Jinja2 渲染 HTML 報告”””
 from jinja2 import Environment
 
-```
+
 env = Environment()
 template = env.from_string(HTML_TEMPLATE)
 
@@ -1258,7 +1258,7 @@ html = template.render(
     physiognomy=physiognomy,
 )
 return html
-```
+
 
 # ─────────────────────────────────────────
 
@@ -1285,7 +1285,7 @@ padding: 12px 30px !important; font-size: 1rem !important;
 </style>
 “””, unsafe_allow_html=True)
 
-```
+
 st.title("🏥 AI 智能醫美面診輔助系統")
 st.caption("上傳三張臉部照片，AI 自動分析並生成治療建議報告")
 
@@ -1414,7 +1414,7 @@ if all_uploaded:
                         with st.expander(f"🔸 {rec['problem']} — {rec['severity']}（分數：{rec['score']:.2f}）"):
                             for prod in rec["recommendations"]:
                                 st.markdown(f"""
-```
+
 
 ## **產品**：{prod[‘product_name’]}  
 **類別**：{prod[‘category’]}  
@@ -1427,14 +1427,14 @@ if all_uploaded:
 else:
 st.success(“目前未偵測到明顯治療需求，維持良好保養即可。”)
 
-```
+
                 # 面相學
                 st.subheader("🔮 面相學評估")
                 p_cols = st.columns(2)
                 for i, reading in enumerate(physio):
                     with p_cols[i % 2]:
                         st.markdown(f"""
-```
+
 
 <div style="background:#1a1a2e;border-radius:10px;padding:14px;margin-bottom:12px;">
 <div style="font-size:1.4rem">{reading['icon']}</div>
@@ -1473,7 +1473,7 @@ else:
     missing = [ANGLE_CONFIG[k]["label"] for k in ("front", "left45", "left90") if k not in uploads]
     if missing:
         st.info(f"請上傳以下照片後開始分析：{', '.join(missing)}")
-```
+
 
 if **name** == “**main**”:
 main()
